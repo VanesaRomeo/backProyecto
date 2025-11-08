@@ -47,11 +47,9 @@ const ORIGINS = (process.env.CLIENT_URLS || "http://localhost:5173")
     allowedHeaders: ["Content-Type", "Authorization"],
   };
 
- this.app.use(cors(corsOptions));       // primero
-this.app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') return res.sendStatus(204); // preflight OK
-  next();
-});
+
+  this.app.use(cors(corsOptions));            // aplica a todo
+  this.app.options("(.*)", cors(corsOptions)); // ✅ fix para Express 5
 }
 
 private routes(): void {
