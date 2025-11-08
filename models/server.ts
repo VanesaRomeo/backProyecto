@@ -1,5 +1,5 @@
 import express, { Express } from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";  
          // /api/registro (u otros)
 
 
@@ -31,17 +31,27 @@ export class Server {
 private middlewares(): void {
   this.app.use(express.json()); // 👈 mover acá, primero
 
-  const ORIGINS = (process.env.CLIENT_URLS || "http://localhost:5173")
+const ORIGINS = (process.env.CLIENT_URLS || "http://localhost:5173")
     .split(",")
     .map(s => s.trim())
     .filter(Boolean);
 
-  this.app.use(cors({
-    origin: ORIGINS,
-    credentials: true,
-    methods: ["GET","POST","PUT","DELETE","PATCH","OPTIONS"],
-    allowedHeaders: ["Content-Type","Authorization"],
-  }));
+  const corsOptions: CorsOptions = {
+    origin(origin, cb) {
+      if (!origin) return cb(null, true);            // permite Postman/curl
+      if (ORIGINS.includes(origin)) return cb(null, true);
+      return cb(new Error("Not allowed by CORS"));
+    },
+    credentials: true,                                // solo si usás cookies
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  };
+
+ this.app.use(cors(corsOptions));       // primero
+this.app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') return res.sendStatus(204); // preflight OK
+  next();
+});
 }
 
 private routes(): void {
