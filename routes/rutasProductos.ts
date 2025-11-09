@@ -1,13 +1,14 @@
-import { Router } from "express";
-import { jwtConfirmar } from "../middlewares/jwtConfirmar"; // <<-- tu archivo real
-import { verificado } from "../middlewares/verificado";     // <<-- tu archivo real
-import { libros } from "../data/productos"                // <<-- el mock que creaste recien
+import { Router, Request, Response } from "express";
 
-const rutasProductos = Router();
+// Si guardaste el catálogo en src/data/libros.ts:
 
-// Provisorio: devuelve el mock. Protegido con tu JWT + verificado.
-rutasProductos.get("/productos", jwtConfirmar, verificado, (_req, res) => {
-  res.json(libros);
+
+const rutasProducto = Router();
+
+// GET /api/productos
+rutasProducto.get("/", (_req: Request, res: Response) => {
+  // reemplazá por tu controller si querés: res.json(await Product.find())
+  res.json();
 });
 
-export default rutasProductos;
+export default rutasProducto;

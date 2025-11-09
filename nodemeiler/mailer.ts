@@ -1,4 +1,3 @@
-// nodemailer/mailer.ts
 import nodemailer from "nodemailer";
 
 export const transporte = nodemailer.createTransport({
@@ -24,6 +23,3 @@ export const enviarEmail = async (to:string,code:string,text:string):Promise<voi
         console.error("Error al enviar el correo",error)
     }
 }
-
-
-

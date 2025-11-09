@@ -1,64 +1,50 @@
 import express, { Express } from "express";
-import cors, { CorsOptions } from "cors";  
+import cors  from "cors";  
          // /api/registro (u otros)
 
 
 import { conectarLaDb } from "../database/config";
-import rutasPedidos from "../routes/rutasPedidos";
+
 
 import auth from "../routes/auth";
 import rutasProductos from "../routes/rutasProductos";
 
 
 export class Server {
-  private app: Express;
-  private port: number;
+  app: Express;
+ port: number;
+  API_PREFIX = "/api";
+pathAuth:string;
+pathProductos:string
 
   constructor() {
     this.app = express();
-    this.port = Number(process.env.PORT) || 3000;
+    this.port = Number(process.env.PORT) || 3001;
+this.pathAuth="/auth";
+this.pathProductos="Productos";
 
     this.conectarDB();
-    this.middlewares();
+        this.middlewares();
     this.routes();
   }
 
-  private async conectarDB(): Promise<void> {
+async conectarDB(): Promise<void> {
     await conectarLaDb();
   }
 
   // server.ts
 private middlewares(): void {
-  this.app.use(express.json()); // 👈 mover acá, primero
+  this.app.use(express.json()); 
+ this.app.use(cors());
 
-const ORIGINS = (process.env.CLIENT_URLS || "http://localhost:5173")
-    .split(",")
-    .map(s => s.trim())
-    .filter(Boolean);
-
-  const corsOptions: CorsOptions = {
-    origin(origin, cb) {
-      if (!origin) return cb(null, true);            // permite Postman/curl
-      if (ORIGINS.includes(origin)) return cb(null, true);
-      return cb(new Error("Not allowed by CORS"));
-    },
-    credentials: true,                                // solo si usás cookies
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  };
-
-
-  this.app.use(cors(corsOptions));            // aplica a todo
-  this.app.options("(.*)", cors(corsOptions)); // ✅ fix para Express 5
 }
 
 private routes(): void {
   this.app.get("/api/health", (_req, res) => res.type("text/plain").send("ok"));
 
 
-  this.app.use("/api/auth", auth);
-  this.app.use("/api/pedidos", rutasPedidos);
-  this.app.use("/api", rutasProductos);
+  this.app.use(`${this.API_PREFIX}${this.pathAuth}`, auth);            // → /api/auth/...
+    this.app.use(`${this.API_PREFIX}${this.pathProductos}`, rutasProductos)
 }
 
 

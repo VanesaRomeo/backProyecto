@@ -14,11 +14,7 @@ const auth = Router();
  */
 auth.post(
   "/registro",
-  (req, _res, next) => {               // <-- middleware de debug
-    console.log("HEADERS:", req.headers["content-type"]);
-    console.log("BODY:", req.body);
-    next();
-  },
+
   [
     check("nombre").trim().isLength({ min: 1 }).withMessage("nombre requerido"),
     check("email").trim().isEmail().withMessage("email inválido"),
