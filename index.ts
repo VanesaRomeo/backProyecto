@@ -1,16 +1,15 @@
-// import { Server } from "./models/server";
-// import dotenv from "dotenv"
+import { Server } from "./models/server";
+import dotenv from "dotenv"
 
-// dotenv.config();
+dotenv.config();
 
-// const server = new Server();
+const server = new Server();
 
-// server.listen()
+server.listen()
 
 
- 
-import { Server } from './models/server';
 
-// NO llamar listen() en Vercel
-const srv = new Server();
-export default srv.app; // Express app como handler serverless
+
+
+
+
