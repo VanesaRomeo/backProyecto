@@ -1,3 +1,4 @@
+// src/models/server.ts
 import express, { Express } from "express";
 import cors from "cors";
 
@@ -10,7 +11,7 @@ export class Server {
   private port: number;
   private API_PREFIX = "/api";
   private pathAuth = "/auth";
-  private pathProductos = "/productos"; // usa minúsculas y agrega "/" al inicio
+  private pathProductos = "/productos"; // /api/productos
 
   constructor() {
     this.app = express();
@@ -26,20 +27,20 @@ export class Server {
   }
 
   private middlewares(): void {
-    // CORS antes de las rutas
-    const allowed = [
-      "http://localhost:5173",
-      
-    ];
+    const allowed = (process.env.CORS_ORIGIN || "http://localhost:5173")
+      .split(",")
+      .map(s => s.trim());
 
-    this.app.use(cors({
-      origin: allowed,
-      methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-      allowedHeaders: ["Content-Type","Authorization"],
-      credentials: true,
-    }));
+    this.app.use(
+      cors({
+        origin: allowed,
+        methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+        allowedHeaders: ["Content-Type","Authorization"],
+        credentials: true,
+      })
+    );
 
-    // Responder preflight
+    // Preflight explícito (opcional; con cors ya suele alcanzar)
     this.app.options("*", cors({
       origin: allowed,
       methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
@@ -51,13 +52,12 @@ export class Server {
   }
 
   private routes(): void {
-    // Salud consistente con el prefijo
     this.app.get(`${this.API_PREFIX}/health`, (_req, res) =>
       res.type("text/plain").send("ok")
     );
 
-    this.app.use(`${this.API_PREFIX}${this.pathAuth}`, auth);            // /api/auth/...
-    this.app.use(`${this.API_PREFIX}${this.pathProductos}`, rutasProductos); // /api/productos/...
+    this.app.use(`${this.API_PREFIX}${this.pathAuth}`, auth);
+    this.app.use(`${this.API_PREFIX}${this.pathProductos}`, rutasProductos);
   }
 
   public listen(): void {
