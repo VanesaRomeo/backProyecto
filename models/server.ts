@@ -31,6 +31,7 @@ export class Server {
       .split(",")
       .map(s => s.trim());
 
+      
     this.app.use(
       cors({
         origin: allowed,
