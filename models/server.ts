@@ -5,6 +5,7 @@ import cors from "cors";
 import { conectarLaDb } from "../database/config";
 import auth from "../routes/auth";
 import rutasProductos from "../routes/rutasProductos";
+import rutasPedidos from "../routes/rutasPedido";
 
 export class Server {
   public app: Express;
@@ -12,10 +13,11 @@ export class Server {
   private API_PREFIX = "/api";
   private pathAuth = "/auth";
   private pathProductos = "/productos"; // /api/productos
+private pathPedidos = "/pedidos";
 
   constructor() {
     this.app = express();
-    this.port = Number(process.env.PORT) || 3001;
+    this.port = Number(process.env.PORT) || 3002;
 
     this.conectarDB();
     this.middlewares();
@@ -55,6 +57,7 @@ this.app.options("*", cors({
 
     this.app.use(`${this.API_PREFIX}${this.pathAuth}`, auth);
     this.app.use(`${this.API_PREFIX}${this.pathProductos}`, rutasProductos);
+     this.app.use(`${this.API_PREFIX}${this.pathPedidos}`, rutasPedidos);
   }
 
   public listen(): void {

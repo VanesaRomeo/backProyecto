@@ -1,14 +1,12 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
+import Pedido from "../models/ProductoPedido";
+// si ya tenés modelo; si no, usá tu fuente de datos
 
-// Si guardaste el catálogo en src/data/libros.ts:
+const rutasProductos = Router();
 
-
-const rutasProducto = Router();
-
-// GET /api/productos
-rutasProducto.get("/", (_req: Request, res: Response) => {
-  // reemplazá por tu controller si querés: res.json(await Product.find())
-  res.json();
+rutasProductos.get("/", async (_req, res) => {
+  const productos = await Pedido.find().lean(); // o tu fuente (array, etc.)
+  res.json({ productos });
 });
 
-export default rutasProducto;
+export default rutasProductos;
