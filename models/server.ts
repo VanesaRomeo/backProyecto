@@ -27,27 +27,23 @@ export class Server {
   }
 
   private middlewares(): void {
-    const allowed = (process.env.CORS_ORIGIN || "http://localhost:5173")
-      .split(",")
-      .map(s => s.trim());
+   const allowed = (process.env.CORS_ORIGINS || "*")
+  .split(",")
+  .map(s => s.trim());
 
-      
-    this.app.use(
-      cors({
-        origin: allowed,
-        methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-        allowedHeaders: ["Content-Type","Authorization"],
-        credentials: true,
-      })
-    );
+this.app.use(cors({
+  origin: allowed,
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
+  credentials: true,
+}));
 
-    // Preflight explícito (opcional; con cors ya suele alcanzar)
-    this.app.options("*", cors({
-      origin: allowed,
-      methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-      allowedHeaders: ["Content-Type","Authorization"],
-      credentials: true,
-    }));
+this.app.options("*", cors({
+  origin: allowed,
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
+  credentials: true,
+}));
 
     this.app.use(express.json());
   }
