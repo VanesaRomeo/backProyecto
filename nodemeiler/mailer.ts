@@ -6,7 +6,7 @@ export const transporte = nodemailer.createTransport({
         user:"gonza.dougan@gmail.com",
         pass:"apiy iudl avte urzn"
     },
-    from:"nucbazappi3317@gmail.com"
+    from:"gonza.dougan@gmail.com"
 }) 
 export const enviarEmail = async (to:string,code:string,text:string):Promise<void> => {
     try {
