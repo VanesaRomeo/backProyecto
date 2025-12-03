@@ -1,4 +1,4 @@
-// src/models/server.ts
+
 import express, { Express } from "express";
 import cors from "cors";
 
@@ -12,40 +12,48 @@ export class Server {
   private port: number;
   private API_PREFIX = "/api";
   private pathAuth = "/auth";
-  private pathProductos = "/productos"; // /api/productos
-private pathPedidos = "/pedidos";
+  private pathProductos = "/productos";
+  private pathPedidos = "/pedidos";
 
   constructor() {
     this.app = express();
     this.port = Number(process.env.PORT) || 3002;
 
-    this.conectarDB();
+    this.conectarDB();     
     this.middlewares();
     this.routes();
   }
 
-  private async conectarDB(): Promise<void> {
-    await conectarLaDb();
+ 
+  private conectarDB(): void {
+    conectarLaDb().catch((err) => {
+      console.error("Error al conectar con la base de datos:", err);
+    });
   }
 
   private middlewares(): void {
-   const allowed = (process.env.CORS_ORIGINS || "*")
-  .split(",")
-  .map(s => s.trim());
+    const allowed = (process.env.CORS_ORIGINS || "*")
+      .split(",")
+      .map((s) => s.trim());
 
-this.app.use(cors({
-  origin: allowed,
-  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"],
-  credentials: true,
-}));
+    this.app.use(
+      cors({
+        origin: allowed,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true,
+      })
+    );
 
-this.app.options("*", cors({
-  origin: allowed,
-  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"],
-  credentials: true,
-}));
+    this.app.options(
+      "*",
+      cors({
+        origin: allowed,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true,
+      })
+    );
 
     this.app.use(express.json());
   }
@@ -57,7 +65,7 @@ this.app.options("*", cors({
 
     this.app.use(`${this.API_PREFIX}${this.pathAuth}`, auth);
     this.app.use(`${this.API_PREFIX}${this.pathProductos}`, rutasProductos);
-     this.app.use(`${this.API_PREFIX}${this.pathPedidos}`, rutasPedidos);
+    this.app.use(`${this.API_PREFIX}${this.pathPedidos}`, rutasPedidos);
   }
 
   public listen(): void {
