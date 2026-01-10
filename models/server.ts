@@ -31,32 +31,31 @@ export class Server {
     });
   }
 
-  private middlewares(): void {
-    const allowed = (process.env.CORS_ORIGINS || "*")
-      .split(",")
-      .map((s) => s.trim());
+ private middlewares(): void {
+  const allowed = (process.env.CORS_ORIGINS || "")
+    .split(",")
+    .map((s) => s.trim());
 
-    this.app.use(
-      cors({
-        origin: allowed,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: true,
-      })
-    );
+  this.app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
 
-    this.app.options(
-      "*",
-      cors({
-        origin: allowed,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: true,
-      })
-    );
+        if (allowed.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
 
-    this.app.use(express.json());
-  }
+  this.app.use(express.json());
+}
+
 
   private routes(): void {
     this.app.get(`${this.API_PREFIX}/health`, (_req, res) =>
